@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Championnat Interne 2024/2025 - Club d'Échecs des 3 Pays</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            max-height: 80px;
+            max-width: 100px;
+        }
+
+        .connection-status {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .connected {
+            background: #27ae60;
+            color: white;
+        }
+
+        .disconnected {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-row-results {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr auto;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            background: #95a5a6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .player-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .player-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .player-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .player-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .delete-player {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .player-card:hover .delete-player {
+            opacity: 1;
+        }
+
+        .results-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 700;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .result-win {
+            color: #27ae60;
+            font-weight: 700;
+        }
+
+        .result-loss {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        .result-draw {
+            color: #f39c12;
+            font-weight: 700;
+        }
+
+        .result-1-0 { color: #48bb78; }
+        .result-0-1 { color: #f56565; }
+        .result-nul { color: #ed8936; }
+        
+        .double-result {
+            color: #2d3748;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .ranking-position {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .matrix-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #1565c0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid #fcc;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #363;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid #cfc;
+        }
+
+        .firebase-config {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .firebase-config h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .firebase-config code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .form-row, .form-row-results {
+                grid-template-columns: 1fr;
+            }
+            
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+
+            .logo {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 10px;
+                text-align: center;
+            }
+
+            .connection-status {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 10px;
+                display: inline-block;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="connection-status" id="connectionStatus">Connexion...</div>
+            <div class="logo">
+                <svg width="80" height="80" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="95" fill="#FFD700" stroke="#333" stroke-width="3"/>
+                    <text x="100" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">CLUB</text>
+                    <text x="100" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#333">D'ÉCHECS</text>
+                    <text x="100" y="130" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">DES 3 PAYS</text>
+                    <path d="M 100 40 L 94 50 L 110 60 L 106 70 L 110 80 L 90 80 L 94 70 L 84 60 L 86 50 Z" fill="#333"/>
+                </svg>
+            </div>
+            <h1>Championnat Interne 2024/2025</h1>
+            <h2>Club d'Échecs des 3 Pays</h2>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('setup')">Configuration</button>
+            <button class="tab" onclick="showTab('players')">Joueurs</button>
+            <button class="tab" onclick="showTab('results')">Résultats</button>
+            <button class="tab" onclick="showTab('matrix')">Tableau des Résultats</button>
+            <button class="tab" onclick="showTab('ranking')">Classement</button>
+        </div>
+
+        <div class="content">
+            <!-- Onglet Configuration Firebase -->
+            <div id="setup" class="tab-content active">
+                <div class="firebase-config">
+                    <h3>Configuration Firebase</h3>
+                    <p>Pour utiliser cette application avec Firebase, vous devez :</p>
+                    <ol>
+                        <li>Créer un projet sur <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                        <li>Activer Firestore Database</li>
+                        <li>Copier la configuration de votre projet ci-dessous :</li>
+                    </ol>
+                </div>
+
+                <div class="form-group">
+                    <label>Configuration Firebase (format JSON)</label>
+                    <textarea id="firebaseConfig" rows="10" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #e9ecef; font-family: monospace;" placeholder='{
+  "apiKey": "votre-api-key",
+  "authDomain": "votre-projet.firebaseapp.com",
+  "projectId": "votre-projet-id",
+  "storageBucket": "votre-projet.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "votre-app-id"
+}'></textarea>
+                </div>
+
+                <div class="form-row">
+                    <button class="btn" onclick="initializeFirebase()">Connecter Firebase</button>
+                    <button class="btn btn-danger" onclick="resetData()">Réinitialiser les données</button>
+                </div>
+
+                <div id="setupMessages"></div>
+            </div>
+
+            <!-- Onglet Joueurs -->
+            <div id="players" class="tab-content">
+                <div class="form-group">
+                    <label>Ajouter un nouveau joueur</label>
+                    <div class="form-row">
+                        <input type="text" id="playerName" placeholder="Nom du joueur" onkeypress="handleEnterKey(event, addPlayer)">
+                        <button class="btn" id="addPlayerBtn" onclick="addPlayer()">Ajouter</button>
+                    </div>
+                </div>
+
+                <div id="playersContainer">
+                    <div class="loading">Chargement des joueurs...</div>
+                </div>
+            </div>
+
+            <!-- Onglet Résultats -->
+            <div id="results" class="tab-content">
+                <div class="form-group">
+                    <label>Enregistrer un nouveau résultat</label>
+                    <div class="form-row-results">
+                        <select id="whitePlayer">
+                            <option value="">Joueur Blancs</option>
+                        </select>
+                        <select id="blackPlayer">
+                            <option value="">Joueur Noirs</option>
+                        </select>
+                        <select id="gameResult">
+                            <option value="">Résultat</option>
+                            <option value="1-0">1-0 (Blancs gagnent)</option>
+                            <option value="0.5-0.5">Match nul</option>
+                            <option value="0-1">0-1 (Noirs gagnent)</option>
+                        </select>
+                        <button class="btn" id="addResultBtn" onclick="addResult()">Enregistrer</button>
+                    </div>
+                </div>
+
+                <div id="resultMessages"></div>
+
+                <div class="results-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Joueur Blancs</th>
+                                <th>Résultat</th>
+                                <th>Joueur Noirs</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <tr><td colspan="5" class="loading">Chargement des résultats...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Onglet Tableau des Résultats -->
+            <div id="matrix" class="tab-content">
+                <div class="matrix-info">
+                    <strong>📋 Lecture du tableau :</strong><br>
+                    • Ligne = joueur, Colonne = adversaire<br>
+                    • Si deux parties ont eu lieu, les deux résultats sont affichés (1ère ligne = joueur avec blancs, 2ème ligne = joueur avec noirs)
+                </div>
+                
+                <div class="results-table">
+                    <table id="resultsMatrix">
+                        <thead>
+                            <tr><th>Joueur</th></tr>
+                        </thead>
+                        <tbody><tr><td class="loading">Chargement du tableau...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Onglet Classement -->
+            <div id="ranking" class="tab-content">
+                <div id="rankingContainer">
+                    <div class="loading">Chargement du classement...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Variables globales
+        let db = null;
+        let isFirebaseInitialized = false;
+        let players = [];
+        let games = [];
+        let unsubscribers = [];
+
+        // Fonctions de gestion des onglets
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Initialisation Firebase
+        function initializeFirebase() {
+            const configText = document.getElementById('firebaseConfig').value.trim();
+            const messagesDiv = document.getElementById('setupMessages');
+            
+            if (!configText) {
+                showMessage(messagesDiv, 'Veuillez entrer la configuration Firebase', 'error');
+                return;
+            }
+
+            try {
+                const config = JSON.parse(configText);
+                
+                // Vérifier les champs requis
+                const requiredFields = ['apiKey', 'authDomain', 'projectId'];
+                for (const field of requiredFields) {
+                    if (!config[field]) {
+                        throw new Error(`Champ manquant : ${field}`);
+                    }
+                }
+
+                // Initialiser Firebase
+                firebase.initializeApp(config);
+                db = firebase.firestore();
+                
+                isFirebaseInitialized = true;
+                updateConnectionStatus(true);
+                showMessage(messagesDiv, 'Firebase connecté avec succès !', 'success');
+                
+                // Sauvegarder la configuration
+                localStorage.setItem('firebaseConfig', configText);
+                
+                // Démarrer l'écoute des données
+                startListening();
+                
+                // Activer les onglets
+                enableTabs();
+                
+            } catch (error) {
+                console.error('Erreur Firebase:', error);
+                showMessage(messagesDiv, `Erreur de configuration : ${error.message}`, 'error');
+                updateConnectionStatus(false);
+            }
+        }
+
+        // Charger la configuration sauvegardée
+        function loadSavedConfig() {
+            const savedConfig = localStorage.getItem('firebaseConfig');
+            if (savedConfig) {
+                document.getElementById('firebaseConfig').value = savedConfig;
+                // Auto-initialisation
+                setTimeout(() => {
+                    initializeFirebase();
+                }, 1000);
+            }
+        }
+
+        // Mettre à jour le statut de connexion
+        function updateConnectionStatus(connected) {
+            const statusDiv = document.getElementById('connectionStatus');
+            if (connected) {
+                statusDiv.textContent = 'Connecté';
+                statusDiv.className = 'connection-status connected';
+            } else {
+                statusDiv.textContent = 'Déconnecté';
+                statusDiv.className = 'connection-status disconnected';
+            }
+        }
+
+        // Activer tous les onglets
+        function enableTabs() {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => btn.disabled = false);
+        }
+
+        // Afficher un message
+        function showMessage(container, message, type) {
+            container.innerHTML = `<div class="${type}-message">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Démarrer l'écoute des données Firebase
+        function startListening() {
+            if (!db) return;
+
+            // Écouter les joueurs
+            const playersUnsubscribe = db.collection('players').onSnapshot((snapshot) => {
+                players = [];
+                snapshot.forEach((doc) => {
+                    players.push({ id: doc.id, ...doc.data() });
+                });
+                updatePlayersDisplay();
+                updatePlayerSelects();
+            });
+
+            // Écouter les parties
+            const gamesUnsubscribe = db.collection('games').onSnapshot((snapshot) => {
+                games = [];
+                snapshot.forEach((doc) => {
+                    games.push({ id: doc.id, ...doc.data() });
+                });
+                updateResultsDisplay();
+                updateResultsMatrix();
+                updateRankingDisplay();
+            });
+
+            unsubscribers = [playersUnsubscribe, gamesUnsubscribe];
+        }
+
+        // Gestion des joueurs
+        async function addPlayer() {
+            if (!isFirebaseInitialized) {
+                alert('Veuillez d\'abord configurer Firebase');
+                return;
+            }
+
+            const nameInput = document.getElementById('playerName');
+            const name = nameInput.value.trim();
+            const btn = document.getElementById('addPlayerBtn');
+
+            if (name === '') {
+                alert('Veuillez entrer un nom de joueur');
+                return;
+            }
+
+            if (players.some(player => player.name === name)) {
+                alert('Ce joueur existe déjà');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Ajout...';
+
+            try {
+                await db.collection('players').add({
+                    name: name,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                nameInput.value = '';
+            } catch (error) {
+                console.error('Erreur ajout joueur:', error);
+                alert('Erreur lors de l\'ajout du joueur');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Ajouter';
+            }
+        }
+
+        async function deletePlayer(playerId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce joueur ? Toutes ses parties seront également supprimées.')) {
+                return;
+            }
+
+            try {
+                // Supprimer les parties du joueur
+                const playerGames = games.filter(game => 
+                    game.whiteId === playerId || game.blackId === playerId
+                );
+                
+                const batch = db.batch();
+                
+                playerGames.forEach(game => {
+                    batch.delete(db.collection('games').doc(game.id));
+                });
+                
+                batch.delete(db.collection('players').doc(playerId));
+                
+                await batch.commit();
+            } catch (error) {
+                console.error('Erreur suppression joueur:', error);
+                alert('Erreur lors de la suppression du joueur');
+            }
+        }
+
+        // Gestion des résultats
+        async function addResult() {
+            if (!isFirebaseInitialized) {
+                alert('Veuillez d\'abord configurer Firebase');
+                return;
+            }
+
+            const whiteId = document.getElementById('whitePlayer').value;
+            const blackId = document.getElementById('blackPlayer').value;
+            const result = document.getElementById('gameResult').value;
+            const btn = document.getElementById('addResultBtn');
+            const messagesDiv = document.getElementById('resultMessages');
+
+            if (!whiteId || !blackId || !result) {
+                showMessage(messagesDiv, 'Veuillez sélectionner tous les champs', 'error');
+                return;
+            }
+
+            if (whiteId === blackId) {
+                showMessage(messagesDiv, 'Un joueur ne peut pas jouer contre lui-même', 'error');
+                return;
+            }
+
+            // Vérifier si cette partie exacte existe déjà
+            const existingGame = games.find(game => 
+                game.whiteId === whiteId && game.blackId === blackId
+            );
+            
+            if (existingGame) {
+                showMessage(messagesDiv, 'Cette partie avec cette configuration de couleurs existe déjà. Vous pouvez inverser les couleurs pour une nouvelle partie.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Enregistrement...';
+
+            try {
+                await db.collection('games').add({
+                    whiteId: whiteId,
+                    blackId: blackId,
+                    result: result,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    date: new Date().toLocaleDateString('fr-FR')
+                });
+
+                // Réinitialiser le formulaire
+                document.getElementById('whitePlayer').value = '';
+                document.getElementById('blackPlayer').value = '';
+                document.getElementById('gameResult').value = '';
+                
+                showMessage(messagesDiv, 'Résultat enregistré avec succès !', 'success');
+            } catch (error) {
+                console.error('Erreur ajout résultat:', error);
+                showMessage(messagesDiv, 'Erreur lors de l\'enregistrement du résultat', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Enregistrer';
+            }
+        }
+
+        async function deleteResult(gameId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce résultat ?')) {
+                return;
+            }
+
+            try {
+                await db.collection('games').doc(gameId).delete();
+            } catch (error) {
+                console.error('Erreur suppression résultat:', error);
+                alert('Erreur lors de la suppression du résultat');
+            }
+        }
+
+        // Calcul des statistiques
+        function calculatePlayerStats() {
+            const stats = players.map(player => ({
+                id: player.id,
+                name: player.name,
+                wins: 0,
+                losses: 0,
+                draws: 0,
+                points: 0,
+                totalGames: 0
+            }));
+
+            games.forEach(game => {
+                const whitePlayer = stats.find(s => s.id === game.whiteId);
+                const blackPlayer = stats.find(s => s.id === game.blackId);
+
+                if (whitePlayer) whitePlayer.totalGames++;
+                if (blackPlayer) blackPlayer.totalGames++;
+
+                if (game.result === '1-0') {
+                    if (whitePlayer) {
+                        whitePlayer.wins++;
+                        whitePlayer.points += 3;
+                    }
+                    if (blackPlayer) {
+                        blackPlayer.losses++;
+                        blackPlayer.points += 1;
+                    }
+                } else if (game.result === '0-1') {
+                    if (blackPlayer) {
+                        blackPlayer.wins++;
+                        blackPlayer.points += 3;
+                    }
+                    if (whitePlayer) {
+                        whitePlayer.losses++;
+                        whitePlayer.points += 1;
+                    }
+                } else if (game.result === '0.5-0.5') {
+                    if (whitePlayer) {
+                        whitePlayer.draws++;
+                        whitePlayer.points += 2;
+                    }
+                    if (blackPlayer) {
+                        blackPlayer.draws++;
+                        blackPlayer.points += 2;
+                    }
+                }
+            });
+
+            return stats;
+        }
+
+        // Mise à jour des affichages
+        function updatePlayersDisplay() {
+            const container = document.getElementById('playersContainer');
+            
+            if (players.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucun joueur inscrit</h3>
+                        <p>Ajoutez des joueurs pour commencer le championnat</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const stats = calculatePlayerStats();
+
+            container.innerHTML = `
+                <div class="players-grid">
+                    ${players.map(player => {
+                        const playerStats = stats.find(s => s.id === player.id) || 
+                            { points: 0, wins: 0, draws: 0, losses: 0 };
+                        return `
+                            <div class="player-card">
+                                <button class="delete-player" onclick="deletePlayer('${player.id}')">×</button>
+                                <div class="player-name">${player.name}</div>
+                                <div class="player-stats">
+                                    <div class="stat">
+                                        <div class="stat-value">${playerStats.points}</div>
+                                        <div class="stat-label">Points</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">${playerStats.wins}</div>
+                                        <div class="stat-label">Victoires</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">${playerStats.draws}</div>
+                                        <div class="stat-label">Nuls</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">${playerStats.losses}</div>
+                                        <div class="stat-label">Défaites</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function updatePlayerSelects() {
+            const whiteSelect = document.getElementById('whitePlayer');
+            const blackSelect = document.getElementById('blackPlayer');
+            
+            const options = players.map(player => 
+                `<option value="${player.id}">${player.name}</option>`
+            ).join('');
+
+            whiteSelect.innerHTML = '<option value="">Joueur Blancs</option>' + options;
+            blackSelect.innerHTML = '<option value="">Joueur Noirs</option>' + options;
+        }
+
+        function updateResultsDisplay() {
+            const tbody = document.getElementById('resultsTableBody');
+            
+            if (games.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #6c757d; padding: 40px;">
+                            Aucun résultat enregistré
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = games.slice().reverse().map(game => {
+                const whitePlayer = players.find(p => p.id === game.whiteId);
+                const blackPlayer = players.find(p => p.id === game.blackId);
+                
+                let resultDisplay = '';
+                if (game.result === '1-0') {
+                    resultDisplay = '<span class="result-win">1 - 0</span>';
+                } else if (game.result === '0-1') {
+                    resultDisplay = '<span class="result-loss">0 - 1</span>';
+                } else {
+                    resultDisplay = '<span class="result-draw">½ - ½</span>';
+                }
+
+                return `
+                    <tr>
+                        <td>${game.date || 'Date inconnue'}</td>
+                        <td>${whitePlayer ? whitePlayer.name : 'Joueur supprimé'}</td>
+                        <td>${resultDisplay}</td>
+                        <td>${blackPlayer ? blackPlayer.name : 'Joueur supprimé'}</td>
+                        <td>
+                            <button class="btn btn-small btn-danger" onclick="deleteResult('${game.id}')">
+                                Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateResultsMatrix() {
+            const table = document.getElementById('resultsMatrix');
+            
+            if (players.length === 0) {
+                table.innerHTML = '<thead><tr><th>Joueur</th></tr></thead><tbody><tr><td>Aucun joueur</td></tr></tbody>';
+                return;
+            }
+            
+            // Créer l'en-tête
+            let headerHTML = '<tr><th>Joueur</th>';
+            players.forEach(player => {
+                headerHTML += `<th>${player.name}</th>`;
+            });
+            headerHTML += '</tr>';
+            
+            // Créer le corps du tableau
+            let bodyHTML = '';
+            players.forEach(rowPlayer => {
+                bodyHTML += `<tr><th>${rowPlayer.name}</th>`;
+                players.forEach(colPlayer => {
+                    if (rowPlayer.id === colPlayer.id) {
+                        bodyHTML += '<td>—</td>';
+                    } else {
+                        // Chercher les deux parties possibles entre ces joueurs
+                        const game1 = games.find(g => g.whiteId === rowPlayer.id && g.blackId === colPlayer.id);
+                        const game2 = games.find(g => g.whiteId === colPlayer.id && g.blackId === rowPlayer.id);
+                        
+                        let cellContent = '';
+                        let cellClass = '';
+                        
+                        if (game1 && game2) {
+                            // Les deux parties ont eu lieu - afficher les deux résultats
+                            let result1 = game1.result;
+                            let result2 = game2.result;
+                            
+                            // Inverser le résultat de game2 car colPlayer était blanc
+                            if (result2 === '1-0') result2 = '0-1';
+                            else if (result2 === '0-1') result2 = '1-0';
+                            
+                            cellContent = `${result1}<br>${result2}`;
+                            cellClass = 'double-result';
+                        } else if (game1) {
+                            // Seule la première partie (rowPlayer blanc) a eu lieu
+                            cellContent = game1.result;
+                            if (game1.result === '1-0') cellClass = 'result-1-0';
+                            else if (game1.result === '0-1') cellClass = 'result-0-1';
+                            else cellClass = 'result-nul';
+                        } else if (game2) {
+                            // Seule la deuxième partie (colPlayer blanc) a eu lieu
+                            let result = game2.result;
+                            // Inverser le résultat car colPlayer était blanc
+                            if (result === '1-0') result = '0-1';
+                            else if (result === '0-1') result = '1-0';
+                            
+                            cellContent = result;
+                            if (result === '1-0') cellClass = 'result-1-0';
+                            else if (result === '0-1') cellClass = 'result-0-1';
+                            else cellClass = 'result-nul';
+                        } else {
+                            // Aucune partie
+                            cellContent = '—';
+                        }
+                        
+                        bodyHTML += `<td class="${cellClass}">${cellContent}</td>`;
+                    }
+                });
+                bodyHTML += '</tr>';
+            });
+            
+            table.innerHTML = `<thead>${headerHTML}</thead><tbody>${bodyHTML}</tbody>`;
+        }
+
+        function updateRankingDisplay() {
+            const container = document.getElementById('rankingContainer');
+            
+            if (games.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucun résultat enregistré</h3>
+                        <p>Ajoutez des résultats pour voir le classement</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const stats = calculatePlayerStats();
+            const sortedPlayers = stats.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                return b.wins - a.wins; // En cas d'égalité, départager par le nombre de victoires
+            });
+
+            container.innerHTML = `
+                <div class="results-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Joueur</th>
+                                <th>Points</th>
+                                <th>Victoires</th>
+                                <th>Nuls</th>
+                                <th>Défaites</th>
+                                <th>Parties</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sortedPlayers.map((player, index) => `
+                                <tr>
+                                    <td>
+                                        <div class="ranking-position">${index + 1}</div>
+                                    </td>
+                                    <td style="font-weight: 700;">${player.name}</td>
+                                    <td style="font-weight: 700; color: #667eea;">${player.points}</td>
+                                    <td class="result-win">${player.wins}</td>
+                                    <td class="result-draw">${player.draws}</td>
+                                    <td class="result-loss">${player.losses}</td>
+                                    <td>${player.totalGames}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Réinitialiser les données
+        async function resetData() {
+            if (!isFirebaseInitialized) {
+                alert('Firebase n\'est pas initialisé');
+                return;
+            }
+
+            if (!confirm('Êtes-vous sûr de vouloir supprimer TOUTES les données ? Cette action est irréversible.')) {
+                return;
+            }
+
+            try {
+                const batch = db.batch();
+                
+                // Supprimer tous les joueurs
+                for (const player of players) {
+                    batch.delete(db.collection('players').doc(player.id));
+                }
+                
+                // Supprimer toutes les parties
+                for (const game of games) {
+                    batch.delete(db.collection('games').doc(game.id));
+                }
+                
+                await batch.commit();
+                alert('Toutes les données ont été supprimées');
+            } catch (error) {
+                console.error('Erreur lors de la réinitialisation:', error);
+                alert('Erreur lors de la suppression des données');
+            }
+        }
+
+        // Fonction utilitaire pour gérer la touche Entrée
+        function handleEnterKey(event, callback) {
+            if (event.key === 'Enter') {
+                callback();
+            }
+        }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateConnectionStatus(false);
+            loadSavedConfig();
+            
+            // Désactiver initialement tous les boutons sauf la configuration
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                if (btn.onclick && btn.onclick.toString().includes('initializeFirebase')) {
+                    return; // Garder le bouton de connexion Firebase actif
+                }
+                btn.disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>
