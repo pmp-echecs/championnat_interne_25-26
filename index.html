@@ -459,7 +459,7 @@
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="showTab('setup')">Configuration</button>
+         <!--   <button class="tab active" onclick="showTab('setup')">Configuration</button> -->
             <button class="tab" onclick="showTab('players')">Joueurs</button>
             <button class="tab" onclick="showTab('results')">Résultats</button>
             <button class="tab" onclick="showTab('matrix')">Tableau des Résultats</button>
@@ -468,7 +468,7 @@
 
         <div class="content">
             <!-- Onglet Configuration Firebase -->
-            <div id="setup" class="tab-content active">
+          <!--  <div id="setup" class="tab-content active">
                 <div class="firebase-config">
                     <h3>Configuration Firebase</h3>
                     <p>Pour utiliser cette application avec Firebase, vous devez :</p>
@@ -497,7 +497,7 @@
                 </div>
 
                 <div id="setupMessages"></div>
-            </div>
+            </div> -->
 
             <!-- Onglet Joueurs -->
             <div id="players" class="tab-content">
@@ -1177,21 +1177,21 @@
                 callback();
             }
         }
+const firebaseConfig = {
+  apiKey: "AIzaSyDUNd5Q-hGQu56AK1wUzcFYmQKeH888nPA",
+  authDomain: "championnat-echecs-3pays.firebaseapp.com",
+  projectId: "championnat-echecs-3pays",
+  storageBucket: "championnat-echecs-3pays.appspot.com",
+  messagingSenderId: "672872837163",
+  appId: "1:672872837163:web:6bd71b64733a69325dfa6e"
+};
 
-        // Initialisation au chargement de la page
-        document.addEventListener('DOMContentLoaded', function() {
-            updateConnectionStatus(false);
-            loadSavedConfig();
-            
-            // Désactiver initialement tous les boutons sauf la configuration
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(btn => {
-                if (btn.onclick && btn.onclick.toString().includes('initializeFirebase')) {
-                    return; // Garder le bouton de connexion Firebase actif
-                }
-                btn.disabled = true;
-            });
-        });
+firebase.initializeApp(firebaseConfig);
+db = firebase.firestore();
+isFirebaseInitialized = true;
+updateConnectionStatus(true);
+startListening();
+enableTabs();
     </script>
 </body>
 </html>
