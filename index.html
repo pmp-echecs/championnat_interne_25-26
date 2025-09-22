@@ -910,55 +910,30 @@
         }
 
         // Mise à jour des affichages
-        function updatePlayersDisplay() {
-            const container = document.getElementById('playersContainer');
-            
-            if (players.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <h3>Aucun joueur inscrit</h3>
-                        <p>Ajoutez des joueurs pour commencer le championnat</p>
-                    </div>
-                `;
-                return;
-            }
+    function updatePlayersDisplay() {
+    const container = document.getElementById('playersContainer');
 
-            const stats = calculatePlayerStats();
+    if (players.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>Aucun joueur inscrit</h3>
+                <p>Ajoutez des joueurs pour commencer le championnat</p>
+            </div>
+        `;
+        return;
+    }
 
-            container.innerHTML = `
-                <div class="players-grid">
-                    ${players.map(player => {
-                        const playerStats = stats.find(s => s.id === player.id) || 
-                            { points: 0, wins: 0, draws: 0, losses: 0 };
-                        return `
-                            <div class="player-card">
-                                <button class="delete-player" onclick="deletePlayer('${player.id}')">×</button>
-                                <div class="player-name">${player.name}</div>
-                                <div class="player-stats">
-                                    <div class="stat">
-                                        <div class="stat-value">${playerStats.points}</div>
-                                        <div class="stat-label">Points</div>
-                                    </div>
-                                    <div class="stat">
-                                        <div class="stat-value">${playerStats.wins}</div>
-                                        <div class="stat-label">Victoires</div>
-                                    </div>
-                                    <div class="stat">
-                                        <div class="stat-value">${playerStats.draws}</div>
-                                        <div class="stat-label">Nuls</div>
-                                    </div>
-                                    <div class="stat">
-                                        <div class="stat-value">${playerStats.losses}</div>
-                                        <div class="stat-label">Défaites</div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
-        }
-
+    container.innerHTML = `
+        <ul>
+            ${players.map(player => `
+                <li>
+                    ${player.name}
+                    <button onclick="deletePlayer('${player.id}')">×</button>
+                </li>
+            `).join('')}
+        </ul>
+    `;
+}
         function updatePlayerSelects() {
             const whiteSelect = document.getElementById('whitePlayer');
             const blackSelect = document.getElementById('blackPlayer');
