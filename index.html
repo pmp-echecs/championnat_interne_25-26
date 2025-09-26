@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5">
     <title>Championnat Interne 2024/2025 - Club d'Échecs des 3 Pays</title>
     <style>
         * {
@@ -269,11 +269,11 @@
             overflow-x: auto;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
+       table {
+  width: 100%;
+  min-width: unset; /* supprime la contrainte */
+  font-size: 0.85rem; /* réduit légèrement sur mobile */
+}
 
         th, td {
             padding: 15px;
