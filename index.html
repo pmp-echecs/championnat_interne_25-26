@@ -74,24 +74,16 @@
             color: white;
         }
 
-        .tabs {
-            display: flex;
-            background: #f8f9fa;
-        }
+        @media (max-width: 600px) {
+    .tabs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 onglets par ligne */
+    }
 
-        .tab {
-            flex: 1;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
-
+    .tab {
+        flex: unset;
+    }
+}
         .tab:hover {
             background: #e9ecef;
         }
