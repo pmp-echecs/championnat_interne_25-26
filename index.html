@@ -261,14 +261,17 @@
             opacity: 1;
         }
 
-        .results-table {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
+.results-table {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* scroll fluide sur iOS */
+}
 
+.results-table table {
+    min-width: 600px; /* force un scroll horizontal sur mobile */
+}
        table {
   width: 100%;
   min-width: unset; /* supprime la contrainte */
