@@ -186,6 +186,20 @@
             background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
+        .delete-cross {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    font-size: 1.2rem;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+}
+.delete-cross:hover {
+    color: #c0392b;
+}
+
         .players-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -998,10 +1012,8 @@
         <td>${resultDisplay}</td>
         <td>${blackPlayer ? blackPlayer.name : 'Joueur supprimé'}</td>
         <td>
-            <button class="btn btn-xsmall btn-danger" onclick="deleteResult('${game.id}')">
-                Supprimer
-            </button>
-        </td>
+    <button class="delete-cross" onclick="deleteResult('${game.id}')">✖</button>
+</td>
     </tr>
 `;
         });
