@@ -176,6 +176,12 @@
             font-size: 0.9rem;
         }
 
+        .btn-xsmall {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+}
+
         .btn-danger {
             background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
@@ -937,48 +943,76 @@
         }
 
         function updateResultsDisplay() {
-            const tbody = document.getElementById('resultsTableBody');
-            
-            if (games.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: #6c757d; padding: 40px;">
-                            Aucun résultat enregistré
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+    const tbody = document.getElementById('resultsTableBody');
+    
+    if (games.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: center; color: #6c757d; padding: 40px;">
+                    Aucun résultat enregistré
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
-            tbody.innerHTML = games.slice().reverse().map(game => {
-                const whitePlayer = players.find(p => p.id === game.whiteId);
-                const blackPlayer = players.find(p => p.id === game.blackId);
-                
-                let resultDisplay = '';
-                if (game.result === '1-0') {
-                    resultDisplay = '<span class="result-win">1 - 0</span>';
-                } else if (game.result === '0-1') {
-                    resultDisplay = '<span class="result-loss">0 - 1</span>';
-                } else {
-                    resultDisplay = '<span class="result-draw">½ - ½</span>';
-                }
+    // Trier par date (ancienne -> récente)
+    const sortedGames = games.slice().sort((a, b) => {
+        const da = new Date(a.date.split('/').reverse().join('-'));
+        const db = new Date(b.date.split('/').reverse().join('-'));
+        return da - db;
+    });
 
-                return `
-                    <tr>
-                        <td>${game.date || 'Date inconnue'}</td>
-                        <td>${whitePlayer ? whitePlayer.name : 'Joueur supprimé'}</td>
-                        <td>${resultDisplay}</td>
-                        <td>${blackPlayer ? blackPlayer.name : 'Joueur supprimé'}</td>
-                        <td>
-                            <button class="btn btn-small btn-danger" onclick="deleteResult('${game.id}')">
-                                Supprimer
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+    // Regrouper par date
+    const groupedByDate = {};
+    sortedGames.forEach(game => {
+        if (!groupedByDate[game.date]) {
+            groupedByDate[game.date] = [];
         }
+        groupedByDate[game.date].push(game);
+    });
 
+    // Construire l'affichage avec "Ronde X"
+    let html = '';
+    let round = 1;
+    for (const date in groupedByDate) {
+        html += `
+            <tr>
+                <td colspan="5" style="text-align:left; font-weight:bold; background:#f1f1f1;">
+                    Ronde ${round} – ${date}
+                </td>
+            </tr>
+        `;
+
+        groupedByDate[date].forEach(game => {
+            const whitePlayer = players.find(p => p.id === game.whiteId);
+            const blackPlayer = players.find(p => p.id === game.blackId);
+
+            let resultDisplay = '';
+            if (game.result === '1-0') resultDisplay = '<span class="result-win">1 - 0</span>';
+            else if (game.result === '0-1') resultDisplay = '<span class="result-loss">0 - 1</span>';
+            else resultDisplay = '<span class="result-draw">½ - ½</span>';
+
+            html += `
+                <tr>
+                    <td>${game.date || 'Date inconnue'}</td>
+                    <td>${whitePlayer ? whitePlayer.name : 'Joueur supprimé'}</td>
+                    <td>${resultDisplay}</td>
+                    <td>${blackPlayer ? blackPlayer.name : 'Joueur supprimé'}</td>
+                    <td>
+                        <button class="btn btn-xsmall btn-danger" onclick="deleteResult('${game.id}')">
+                            Supprimer
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        round++;
+    }
+
+    tbody.innerHTML = html;
+}
         function updateResultsMatrix() {
             const table = document.getElementById('resultsMatrix');
             
