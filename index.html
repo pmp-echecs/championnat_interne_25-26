@@ -993,18 +993,17 @@
             else resultDisplay = '<span class="result-draw">½ - ½</span>';
 
             html += `
-                <tr>
-                    <td>${game.date || 'Date inconnue'}</td>
-                    <td>${whitePlayer ? whitePlayer.name : 'Joueur supprimé'}</td>
-                    <td>${resultDisplay}</td>
-                    <td>${blackPlayer ? blackPlayer.name : 'Joueur supprimé'}</td>
-                    <td>
-                        <button class="btn btn-xsmall btn-danger" onclick="deleteResult('${game.id}')">
-                            Supprimer
-                        </button>
-                    </td>
-                </tr>
-            `;
+    <tr>
+        <td>${whitePlayer ? whitePlayer.name : 'Joueur supprimé'}</td>
+        <td>${resultDisplay}</td>
+        <td>${blackPlayer ? blackPlayer.name : 'Joueur supprimé'}</td>
+        <td>
+            <button class="btn btn-xsmall btn-danger" onclick="deleteResult('${game.id}')">
+                Supprimer
+            </button>
+        </td>
+    </tr>
+`;
         });
 
         round++;
