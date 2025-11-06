@@ -586,6 +586,7 @@
                             <option value="1-0">1-0 (Blancs gagnent)</option>
                             <option value="0.5-0.5">Match nul</option>
                             <option value="0-1">0-1 (Noirs gagnent)</option>
+                             <option value="exempt">Exempt (3 points)</option>
                         </select>
                         <button class="btn" id="addResultBtn" onclick="addResult()">Enregistrer</button>
                     </div>
@@ -851,6 +852,39 @@
                 showMessage(messagesDiv, 'Veuillez sélectionner tous les champs', 'error');
                 return;
             }
+            // Cas spécial : joueur exempt
+if (result === 'exempt') {
+    if (!whiteId) {
+        showMessage(messagesDiv, 'Veuillez choisir le joueur exempt (côté Blancs)', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement...';
+
+    try {
+        await db.collection('games').add({
+            whiteId: whiteId,
+            blackId: null,
+            result: 'exempt',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            date: new Date().toLocaleDateString('fr-FR')
+        });
+
+        document.getElementById('whitePlayer').value = '';
+        document.getElementById('blackPlayer').value = '';
+        document.getElementById('gameResult').value = '';
+
+        showMessage(messagesDiv, 'Exemption enregistrée (+3 points)', 'success');
+    } catch (error) {
+        console.error('Erreur ajout exemption:', error);
+        showMessage(messagesDiv, 'Erreur lors de l’enregistrement de l’exemption', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enregistrer';
+    }
+    return;
+}
 
             if (whiteId === blackId) {
                 showMessage(messagesDiv, 'Un joueur ne peut pas jouer contre lui-même', 'error');
@@ -925,7 +959,10 @@
 
                 if (whitePlayer) whitePlayer.totalGames++;
                 if (blackPlayer) blackPlayer.totalGames++;
-
+if (game.result === 'exempt') {
+    if (whitePlayer) whitePlayer.points += 3;
+    return;
+}
                 if (game.result === '1-0') {
                     if (whitePlayer) {
                         whitePlayer.wins++;
@@ -1042,6 +1079,18 @@
             const whitePlayer = players.find(p => p.id === game.whiteId);
             const blackPlayer = players.find(p => p.id === game.blackId);
 
+            if (game.result === 'exempt') {
+    html += `
+        <tr>
+            <td>${whitePlayer ? whitePlayer.name : 'Joueur supprimé'}</td>
+            <td><span class="result-win">Exempt (+3)</span></td>
+            <td>—</td>
+            <td><button class="delete-cross" onclick="deleteResult('${game.id}')">✖</button></td>
+        </tr>
+    `;
+    return;
+}
+
             let resultDisplay = '';
             if (game.result === '1-0') resultDisplay = '<span class="result-win">1 - 0</span>';
             else if (game.result === '0-1') resultDisplay = '<span class="result-loss">0 - 1</span>';
@@ -1093,7 +1142,10 @@
                         
                         let cellContent = '';
                         let cellClass = '';
-                        
+                        if (games.some(g => g.result === 'exempt')) {
+    // On ne montre pas les exemptions dans le tableau
+    games = games.filter(g => g.result !== 'exempt');
+}
                         if (game1 && game2) {
                             // Les deux parties ont eu lieu - afficher les deux résultats
                             let result1 = game1.result;
