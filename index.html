@@ -575,21 +575,20 @@
                 <div class="form-group">
                     <label>Enregistrer un nouveau résultat</label>
                     <div class="form-row-results">
-    <select id="whitePlayer">
-        <option value="">Joueur Blancs</option>
-    </select>
-    <select id="blackPlayer">
-        <option value="">Joueur Noirs</option>
-    </select>
-    <select id="gameResult">
-        <option value="">Résultat</option>
-        <option value="1-0">1-0 (Blancs gagnent)</option>
-        <option value="0.5-0.5">Match nul</option>
-        <option value="0-1">0-1 (Noirs gagnent)</option>
-        <option value="exempt">Exempt</option>
-    </select>
-    <button class="btn" id="addResultBtn" onclick="addResult()">Enregistrer</button>
-</div>
+                        <select id="whitePlayer">
+                            <option value="">Joueur Blancs</option>
+                        </select>
+                        <select id="blackPlayer">
+                            <option value="">Joueur Noirs</option>
+                        </select>
+                        <select id="gameResult">
+                            <option value="">Résultat</option>
+                            <option value="1-0">1-0 (Blancs gagnent)</option>
+                            <option value="0.5-0.5">Match nul</option>
+                            <option value="0-1">0-1 (Noirs gagnent)</option>
+                        </select>
+                        <button class="btn" id="addResultBtn" onclick="addResult()">Enregistrer</button>
+                    </div>
                 </div>
 
                 <div id="resultMessages"></div>
@@ -836,108 +835,65 @@
         }
 
         // Gestion des résultats
-      async function addResult() {
-    if (!isFirebaseInitialized) {
-        alert('Veuillez d\'abord configurer Firebase');
-        return;
-    }
+        async function addResult() {
+            if (!isFirebaseInitialized) {
+                alert('Veuillez d\'abord configurer Firebase');
+                return;
+            }
 
-    const whiteId = document.getElementById('whitePlayer').value;
-    const blackId = document.getElementById('blackPlayer').value;
-    const result = document.getElementById('gameResult').value;
-    const btn = document.getElementById('addResultBtn');
-    const messagesDiv = document.getElementById('resultMessages');
+            const whiteId = document.getElementById('whitePlayer').value;
+            const blackId = document.getElementById('blackPlayer').value;
+            const result = document.getElementById('gameResult').value;
+            const btn = document.getElementById('addResultBtn');
+            const messagesDiv = document.getElementById('resultMessages');
 
-    // Gestion de l'exempt
-    if (result === 'exempt') {
-        if (!whiteId) {
-            showMessage(messagesDiv, 'Veuillez sélectionner le joueur exempt', 'error');
-            return;
-        }
-        
-        // Vérifier si ce joueur a déjà un exempt à cette date
-        const today = new Date().toLocaleDateString('fr-FR');
-        const existingExempt = games.find(game => 
-            game.result === 'exempt' && game.whiteId === whiteId && game.date === today
-        );
-        
-        if (existingExempt) {
-            showMessage(messagesDiv, 'Ce joueur a déjà un exempt aujourd\'hui', 'error');
-            return;
-        }
+            if (!whiteId || !blackId || !result) {
+                showMessage(messagesDiv, 'Veuillez sélectionner tous les champs', 'error');
+                return;
+            }
 
-        btn.disabled = true;
-        btn.textContent = 'Enregistrement...';
+            if (whiteId === blackId) {
+                showMessage(messagesDiv, 'Un joueur ne peut pas jouer contre lui-même', 'error');
+                return;
+            }
 
-        try {
-            await db.collection('games').add({
-                whiteId: whiteId,
-                blackId: null,
-                result: 'exempt',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                date: today
-            });
-
-            document.getElementById('whitePlayer').value = '';
-            document.getElementById('blackPlayer').value = '';
-            document.getElementById('gameResult').value = '';
+            // Vérifier si cette partie exacte existe déjà
+            const existingGame = games.find(game => 
+                game.whiteId === whiteId && game.blackId === blackId
+            );
             
-            showMessage(messagesDiv, 'Exempt enregistré avec succès !', 'success');
-        } catch (error) {
-            console.error('Erreur ajout exempt:', error);
-            showMessage(messagesDiv, 'Erreur lors de l\'enregistrement de l\'exempt', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Enregistrer';
+            if (existingGame) {
+                showMessage(messagesDiv, 'Cette partie avec cette configuration de couleurs existe déjà. Vous pouvez inverser les couleurs pour une nouvelle partie.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Enregistrement...';
+
+            try {
+                await db.collection('games').add({
+                    whiteId: whiteId,
+                    blackId: blackId,
+                    result: result,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    date: new Date().toLocaleDateString('fr-FR')
+                });
+
+                // Réinitialiser le formulaire
+                document.getElementById('whitePlayer').value = '';
+                document.getElementById('blackPlayer').value = '';
+                document.getElementById('gameResult').value = '';
+                
+                showMessage(messagesDiv, 'Résultat enregistré avec succès !', 'success');
+            } catch (error) {
+                console.error('Erreur ajout résultat:', error);
+                showMessage(messagesDiv, 'Erreur lors de l\'enregistrement du résultat', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Enregistrer';
+            }
         }
-        return;
-    }
 
-    // Reste du code pour les parties normales
-    if (!whiteId || !blackId || !result) {
-        showMessage(messagesDiv, 'Veuillez sélectionner tous les champs', 'error');
-        return;
-    }
-
-    if (whiteId === blackId) {
-        showMessage(messagesDiv, 'Un joueur ne peut pas jouer contre lui-même', 'error');
-        return;
-    }
-
-    const existingGame = games.find(game => 
-        game.whiteId === whiteId && game.blackId === blackId
-    );
-    
-    if (existingGame) {
-        showMessage(messagesDiv, 'Cette partie avec cette configuration de couleurs existe déjà. Vous pouvez inverser les couleurs pour une nouvelle partie.', 'error');
-        return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Enregistrement...';
-
-    try {
-        await db.collection('games').add({
-            whiteId: whiteId,
-            blackId: blackId,
-            result: result,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            date: new Date().toLocaleDateString('fr-FR')
-        });
-
-        document.getElementById('whitePlayer').value = '';
-        document.getElementById('blackPlayer').value = '';
-        document.getElementById('gameResult').value = '';
-        
-        showMessage(messagesDiv, 'Résultat enregistré avec succès !', 'success');
-    } catch (error) {
-        console.error('Erreur ajout résultat:', error);
-        showMessage(messagesDiv, 'Erreur lors de l\'enregistrement du résultat', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Enregistrer';
-    }
-}
         async function deleteResult(gameId) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer ce résultat ?')) {
                 return;
@@ -952,68 +908,57 @@
         }
 
         // Calcul des statistiques
-        javascriptfunction function calculatePlayerStats() {
-    const stats = players.map(player => ({
-        id: player.id,
-        name: player.name,
-        wins: 0,
-        losses: 0,
-        draws: 0,
-        exempts: 0,
-        points: 0,
-        totalGames: 0
-    }));
+        function calculatePlayerStats() {
+            const stats = players.map(player => ({
+                id: player.id,
+                name: player.name,
+                wins: 0,
+                losses: 0,
+                draws: 0,
+                points: 0,
+                totalGames: 0
+            }));
 
-    games.forEach(game => {
-        // Gestion de l'exempt
-        if (game.result === 'exempt') {
-            const player = stats.find(s => s.id === game.whiteId);
-            if (player) {
-                player.exempts++;
-                player.points += 3;
-                player.totalGames++;
-            }
-            return;
+            games.forEach(game => {
+                const whitePlayer = stats.find(s => s.id === game.whiteId);
+                const blackPlayer = stats.find(s => s.id === game.blackId);
+
+                if (whitePlayer) whitePlayer.totalGames++;
+                if (blackPlayer) blackPlayer.totalGames++;
+
+                if (game.result === '1-0') {
+                    if (whitePlayer) {
+                        whitePlayer.wins++;
+                        whitePlayer.points += 3;
+                    }
+                    if (blackPlayer) {
+                        blackPlayer.losses++;
+                        blackPlayer.points += 1;
+                    }
+                } else if (game.result === '0-1') {
+                    if (blackPlayer) {
+                        blackPlayer.wins++;
+                        blackPlayer.points += 3;
+                    }
+                    if (whitePlayer) {
+                        whitePlayer.losses++;
+                        whitePlayer.points += 1;
+                    }
+                } else if (game.result === '0.5-0.5') {
+                    if (whitePlayer) {
+                        whitePlayer.draws++;
+                        whitePlayer.points += 2;
+                    }
+                    if (blackPlayer) {
+                        blackPlayer.draws++;
+                        blackPlayer.points += 2;
+                    }
+                }
+            });
+
+            return stats;
         }
 
-        const whitePlayer = stats.find(s => s.id === game.whiteId);
-        const blackPlayer = stats.find(s => s.id === game.blackId);
-
-        if (whitePlayer) whitePlayer.totalGames++;
-        if (blackPlayer) blackPlayer.totalGames++;
-
-        if (game.result === '1-0') {
-            if (whitePlayer) {
-                whitePlayer.wins++;
-                whitePlayer.points += 3;
-            }
-            if (blackPlayer) {
-                blackPlayer.losses++;
-                blackPlayer.points += 1;
-            }
-        } else if (game.result === '0-1') {
-            if (blackPlayer) {
-                blackPlayer.wins++;
-                blackPlayer.points += 3;
-            }
-            if (whitePlayer) {
-                whitePlayer.losses++;
-                whitePlayer.points += 1;
-            }
-        } else if (game.result === '0.5-0.5') {
-            if (whitePlayer) {
-                whitePlayer.draws++;
-                whitePlayer.points += 2;
-            }
-            if (blackPlayer) {
-                blackPlayer.draws++;
-                blackPlayer.points += 2;
-            }
-        }
-    });
-
-    return stats;
-}
         // Mise à jour des affichages
     function updatePlayersDisplay() {
     const container = document.getElementById('playersContainer');
@@ -1094,21 +1039,6 @@
         `;
 
         groupedByDate[date].forEach(game => {
-    // Gestion de l'exempt
-    if (game.result === 'exempt') {
-        const player = players.find(p => p.id === game.whiteId);
-        html += `
-            <tr>
-                <td colspan="2">${player ? player.name : 'Joueur supprimé'}</td>
-                <td><span class="result-win">EXEMPT</span></td>
-                <td>
-                    <button class="delete-cross" onclick="deleteResult('${game.id}')">✖</button>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-// Reste du code pour les parties normales...
             const whitePlayer = players.find(p => p.id === game.whiteId);
             const blackPlayer = players.find(p => p.id === game.blackId);
 
@@ -1157,9 +1087,9 @@
                     if (rowPlayer.id === colPlayer.id) {
                         bodyHTML += '<td>—</td>';
                     } else {
-    // Chercher les deux parties possibles entre ces joueurs (ignorer les exempts)
-    const game1 = games.find(g => g.result !== 'exempt' && g.whiteId === rowPlayer.id && g.blackId === colPlayer.id);
-    const game2 = games.find(g => g.result !== 'exempt' && g.whiteId === colPlayer.id && g.blackId === rowPlayer.id);
+                        // Chercher les deux parties possibles entre ces joueurs
+                        const game1 = games.find(g => g.whiteId === rowPlayer.id && g.blackId === colPlayer.id);
+                        const game2 = games.find(g => g.whiteId === colPlayer.id && g.blackId === rowPlayer.id);
                         
                         let cellContent = '';
                         let cellClass = '';
@@ -1236,7 +1166,6 @@
                                 <th>Victoires</th>
                                 <th>Nuls</th>
                                 <th>Défaites</th>
-                                <th>Exempts</th>
                                 <th>Parties</th>
                             </tr>
                         </thead>
@@ -1253,7 +1182,6 @@
                                     <td class="result-win">${player.wins}</td>
                                     <td class="result-draw">${player.draws}</td>
                                     <td class="result-loss">${player.losses}</td>
-                                    <td class="result-win">${player.exempts}</td>
                                     <td>${player.totalGames}</td>
                                 </tr>
                             `).join('')}
