@@ -1318,9 +1318,14 @@ function showPlayerResults(playerId) {
     const player = players.find(p => p.id === playerId);
     if (!player) return;
 
-    const playerGames = games.filter(
-        g => g.whiteId === playerId || g.blackId === playerId
-    );
+    const playerGames = games
+        .filter(g => g.whiteId === playerId || g.blackId === playerId)
+        .sort((a, b) => {
+            // Tri par date (ancienne → récente)
+            const da = new Date(a.date.split('/').reverse().join('-'));
+            const db = new Date(b.date.split('/').reverse().join('-'));
+            return da - db;
+        });
 
     let html = `
         <div class="player-results-card">
@@ -1333,6 +1338,7 @@ function showPlayerResults(playerId) {
         html += `<li>Aucune partie enregistrée.</li>`;
     } else {
         playerGames.forEach(game => {
+            // Cas spécial : exempt
             if (game.result === 'exempt') {
                 html += `<li>${player.name} : <strong>Exempt</strong> (${game.date})</li>`;
                 return;
@@ -1362,7 +1368,6 @@ function closePlayerResults() {
     const card = document.querySelector('.player-results-card');
     if (card) card.remove();
 }
-
     </script>
 </body>
 </html>
