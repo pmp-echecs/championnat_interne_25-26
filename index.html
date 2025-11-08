@@ -1095,16 +1095,18 @@
 
         groupedByDate[date].forEach(game => {
     if (game.result === 'exempt') {
-        const player = players.find(p => p.id === game.whiteId);
-        html += `
-            <tr>
-                <td colspan="2">${player ? player.name : 'Joueur supprimé'}</td>
-                <td><span class="result-win">EXEMPT</span></td>
-                <td>
-                    <button class="delete-cross" onclick="deleteResult('${game.id}')">✖</button>
-                </td>
-            </tr>
-        `;
+    const player = players.find(p => p.id === game.whiteId);
+    html += `
+        <tr>
+            <td>${player ? player.name : 'Joueur supprimé'}</td>
+            <td><span class="result-win">EXEMPT</span></td>
+            <td></td>
+            <td>
+                <button class="delete-cross" onclick="deleteResult('${game.id}')">✖</button>
+            </td>
+        </tr>
+    `;
+}
     } else {
         const whitePlayer = players.find(p => p.id === game.whiteId);
         const blackPlayer = players.find(p => p.id === game.blackId);
