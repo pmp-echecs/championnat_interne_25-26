@@ -866,15 +866,7 @@
         return;
     }
 
-    const existingGame = games.find(game => 
-        game.whiteId === whiteId && game.blackId === blackId
-    );
-    
-    if (existingGame) {
-        showMessage(messagesDiv, 'Cette partie avec cette configuration de couleurs existe déjà. Vous pouvez inverser les couleurs pour une nouvelle partie.', 'error');
-        return;
-    }
-
+   
     btn.disabled = true;
     btn.textContent = 'Enregistrement...';
 
